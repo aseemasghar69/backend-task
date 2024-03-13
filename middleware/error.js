@@ -20,6 +20,14 @@ const errorHandler = (err, req, res, next) => {
     error = new ErrorResponse(message, 400);
   }
 
+  if (error.name == "PrismaClientKnownRequestError") {
+    const lines = error.message.split("\n");
+    const message = lines[lines.length - 1];
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: message || "Server Error",
+    });
+  }
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message || "Server Error",
